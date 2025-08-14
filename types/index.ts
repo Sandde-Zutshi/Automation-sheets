@@ -139,6 +139,9 @@ export interface KnowledgeGraphNode {
   name: string
   category: ParameterCategory
   value?: number
+  unit?: string
+  isAbnormal?: boolean
+  referenceRange?: string
   x?: number
   y?: number
 }

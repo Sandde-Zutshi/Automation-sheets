@@ -110,7 +110,7 @@ export default function KnowledgeGraphPage() {
       .enter()
       .append('g')
       .attr('class', 'knowledge-graph-node')
-      .call(d3.drag()
+      .call(d3.drag<SVGGElement, KnowledgeGraphNode>()
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended))

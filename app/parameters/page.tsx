@@ -10,6 +10,7 @@ import {
   Eye
 } from 'lucide-react'
 import { getParameterCategoryColor, formatDate } from '@/lib/utils'
+import { ParameterCategory } from '@/types'
 
 interface Patient {
   id: string
@@ -107,7 +108,7 @@ export default function ParametersPage() {
           <p className="text-sm text-gray-600">{parameter.patient.name}</p>
         </div>
         <div className="flex items-center space-x-2">
-          <span className={getParameterCategoryColor(parameter.category)}>
+          <span className={getParameterCategoryColor(parameter.category as ParameterCategory)}>
             {parameter.category.replace('_', ' ')}
           </span>
           {parameter.isAbnormal && (

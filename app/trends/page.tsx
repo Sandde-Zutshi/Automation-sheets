@@ -89,7 +89,7 @@ export default function TrendsPage() {
       const response = await fetch(`/api/parameters?patientId=${selectedPatient}`)
       const data = await response.json()
       if (data.success) {
-        const uniqueParameters = [...new Set(data.data.map((p: any) => p.name))]
+        const uniqueParameters = Array.from(new Set(data.data.map((p: any) => p.name))) as string[]
         setParameters(uniqueParameters)
       }
     } catch (error) {
