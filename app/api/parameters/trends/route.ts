@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const trends = parameters.map(param => ({
+    const trends = parameters.map((param: any) => ({
       date: param.bloodTest.testDate,
       value: param.value,
       isAbnormal: param.isAbnormal,
@@ -50,8 +50,8 @@ export async function GET(request: NextRequest) {
     }))
 
     // Calculate statistics
-    const values = parameters.map(p => p.value)
-    const abnormalCount = parameters.filter(p => p.isAbnormal).length
+    const values = parameters.map((p: any) => p.value)
+    const abnormalCount = parameters.filter((p: any) => p.isAbnormal).length
     const totalCount = parameters.length
 
     const stats = {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       abnormalPercentage: totalCount > 0 ? (abnormalCount / totalCount) * 100 : 0,
       min: values.length > 0 ? Math.min(...values) : null,
       max: values.length > 0 ? Math.max(...values) : null,
-      average: values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : null,
+      average: values.length > 0 ? values.reduce((a: number, b: number) => a + b, 0) / values.length : null,
       latestValue: trends.length > 0 ? trends[trends.length - 1] : null,
       previousValue: trends.length > 1 ? trends[trends.length - 2] : null,
     }

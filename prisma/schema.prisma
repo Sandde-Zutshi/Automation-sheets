@@ -60,7 +60,8 @@ model BloodParameter {
   // Relations
   patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   bloodTest   BloodTest @relation(fields: [bloodTestId], references: [id], onDelete: Cascade)
-  relationships ParameterRelationship[]
+  sourceRelationships ParameterRelationship[] @relation("SourceParameter")
+  targetRelationships ParameterRelationship[] @relation("TargetParameter")
 
   @@unique([bloodTestId, name])
   @@map("blood_parameters")

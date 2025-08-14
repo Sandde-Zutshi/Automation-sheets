@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const parameters = await prisma.bloodParameter.findMany({
       where,
       include: {
-        relationships: {
+        sourceRelationships: {
           where: {
             strength: {
               gte: minStrength
@@ -39,13 +39,23 @@ export async function GET(request: NextRequest) {
           include: {
             targetParameter: true
           }
+        },
+        targetRelationships: {
+          where: {
+            strength: {
+              gte: minStrength
+            }
+          },
+          include: {
+            sourceParameter: true
+          }
         }
       },
       orderBy: { category: 'asc' }
     })
 
     // Create nodes
-    const nodes: KnowledgeGraphNode[] = parameters.map(param => ({
+    const nodes: KnowledgeGraphNode[] = parameters.map((param: any) => ({
       id: param.id,
       name: param.name,
       category: param.category,
@@ -59,8 +69,26 @@ export async function GET(request: NextRequest) {
     const links: KnowledgeGraphLink[] = []
     const processedRelationships = new Set<string>()
 
-    parameters.forEach(param => {
-      param.relationships.forEach(rel => {
+    parameters.forEach((param: any) => {
+      // Process source relationships
+      param.sourceRelationships.forEach((rel: any) => {
+        const linkId = `${rel.sourceParameterId}-${rel.targetParameterId}`
+        const reverseLinkId = `${rel.targetParameterId}-${rel.sourceParameterId}`
+        
+        if (!processedRelationships.has(linkId) && !processedRelationships.has(reverseLinkId)) {
+          links.push({
+            source: rel.sourceParameterId,
+            target: rel.targetParameterId,
+            relationshipType: rel.relationshipType,
+            strength: rel.strength,
+            description: rel.description
+          })
+          processedRelationships.add(linkId)
+        }
+      })
+      
+      // Process target relationships
+      param.targetRelationships.forEach((rel: any) => {
         const linkId = `${rel.sourceParameterId}-${rel.targetParameterId}`
         const reverseLinkId = `${rel.targetParameterId}-${rel.sourceParameterId}`
         
@@ -93,8 +121,8 @@ export async function GET(request: NextRequest) {
     const stats = {
       totalNodes: nodes.length,
       totalLinks: links.length,
-      categories: [...new Set(nodes.map(n => n.category))],
-      relationshipTypes: [...new Set(links.map(l => l.relationshipType))],
+      categories: Array.from(new Set(nodes.map(n => n.category))),
+      relationshipTypes: Array.from(new Set(links.map(l => l.relationshipType))),
       averageStrength: links.length > 0 
         ? links.reduce((sum, link) => sum + link.strength, 0) / links.length 
         : 0,
