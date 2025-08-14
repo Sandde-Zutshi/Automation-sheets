@@ -1,18 +1,19 @@
 {
+  "framework": "nextjs",
   "functions": {
-    "app/api/blood-tests/route.ts": {
+    "api/blood-tests": {
       "maxDuration": 60
     },
-    "app/api/patients/route.ts": {
+    "api/patients": {
       "maxDuration": 30
     },
-    "app/api/parameters/route.ts": {
+    "api/parameters": {
       "maxDuration": 30
     },
-    "app/api/parameters/trends/route.ts": {
+    "api/parameters/trends": {
       "maxDuration": 30
     },
-    "app/api/knowledge-graph/route.ts": {
+    "api/knowledge-graph": {
       "maxDuration": 30
     }
   },
