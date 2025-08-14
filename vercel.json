@@ -1,21 +1,4 @@
 {
-  "functions": {
-    "app/api/blood-tests/route.ts": {
-      "maxDuration": 60
-    },
-    "app/api/patients/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/parameters/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/parameters/trends/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/knowledge-graph/route.ts": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   },
