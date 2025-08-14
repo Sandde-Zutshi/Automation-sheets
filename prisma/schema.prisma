@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
+  dateOfBirth DateTime?
+  gender    Gender?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  bloodTests BloodTest[]
+  parameters BloodParameter[]
+
+  @@map("patients")
+}
+
+model BloodTest {
+  id          String   @id @default(cuid())
+  patientId   String
+  testDate    DateTime
+  labName     String?
+  reportNumber String?
+  pdfUrl      String?
+  status      TestStatus @default(PROCESSING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  parameters  BloodParameter[]
+
+  @@map("blood_tests")
+}
+
+model BloodParameter {
+  id          String   @id @default(cuid())
+  patientId   String
+  bloodTestId String
+  name        String
+  value       Float
+  unit        String?
+  referenceRange String?
+  isAbnormal  Boolean @default(false)
+  category    ParameterCategory
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  bloodTest   BloodTest @relation(fields: [bloodTestId], references: [id], onDelete: Cascade)
+  relationships ParameterRelationship[]
+
+  @@unique([bloodTestId, name])
+  @@map("blood_parameters")
+}
+
+model ParameterRelationship {
+  id              String   @id @default(cuid())
+  sourceParameterId String
+  targetParameterId String
+  relationshipType RelationshipType
+  strength         Float    @default(0.5) // 0.0 to 1.0
+  description      String?
+  createdAt        DateTime @default(now())
+
+  // Relations
+  sourceParameter BloodParameter @relation("SourceParameter", fields: [sourceParameterId], references: [id], onDelete: Cascade)
+  targetParameter BloodParameter @relation("TargetParameter", fields: [targetParameterId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceParameterId, targetParameterId])
+  @@map("parameter_relationships")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum TestStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ParameterCategory {
+  HEMATOLOGY
+  BIOCHEMISTRY
+  LIPID_PROFILE
+  THYROID_FUNCTION
+  LIVER_FUNCTION
+  KIDNEY_FUNCTION
+  DIABETES
+  CARDIOVASCULAR
+  INFLAMMATION
+  OTHER
+}
+
+enum RelationshipType {
+  POSITIVE_CORRELATION
+  NEGATIVE_CORRELATION
+  INVERSE
+  SYNERGISTIC
+  ANTAGONISTIC
+  CAUSAL
+  ASSOCIATED
+} 
